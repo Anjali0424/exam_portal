@@ -166,15 +166,30 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 SizedBox(height: 20),
 
                 // 🆕 Register Link
+// 🆕 Register Link
                 Center(
-                    child: Text(
-                      "Don't have an account? Register",
-                      style: TextStyle(
-                        color: Color(0xFF034EA1),
-                        fontWeight: FontWeight.w600,
+                  child: GestureDetector(
+                    onTap: () {
+                      // 🚀 Navigate to Register Screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const StudentRegisterScreen(),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0), // Adds a larger touch area
+                      child: Text(
+                        "Don't have an account? Register",
+                        style: TextStyle(
+                          color: Color(0xFF034EA1),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),

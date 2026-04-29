@@ -1,25 +1,46 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../services/mongo_service.dart';
 
 class StudentRegisterScreen extends StatefulWidget {
   const StudentRegisterScreen({super.key});
 
   @override
-  State<StudentRegisterScreen> createState() => _StudentRegisterScreenState();
+  State<StudentRegisterScreen> createState() =>
+      _StudentRegisterScreenState();
 }
 
-class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
+class _StudentRegisterScreenState
+    extends State<StudentRegisterScreen> {
 
   bool isPasswordHidden = true;
+
   final _formKey = GlobalKey<FormState>();
+
   final supabase = Supabase.instance.client;
 
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController rollController = TextEditingController();
+  final ImagePicker picker = ImagePicker();
+
+  File? selectedImage;
+
+  TextEditingController nameController =
+  TextEditingController();
+
+  TextEditingController emailController =
+  TextEditingController();
+
+  TextEditingController passwordController =
+  TextEditingController();
+
+  TextEditingController rollController =
+  TextEditingController();
 
   List<dynamic> departments = [];
+
   int? selectedDeptId;
 
   @override
@@ -28,11 +49,27 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
     fetchDepartments();
   }
 
+  // ✅ Fetch Departments
   Future<void> fetchDepartments() async {
-    final data = await supabase.from('departments').select();
+    final data =
+    await supabase.from('departments').select();
+
     setState(() {
       departments = data;
     });
+  }
+
+  // ✅ Pick Profile Image
+  Future<void> pickImage() async {
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image.path);
+      });
+    }
   }
 
   @override
@@ -43,17 +80,23 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 24),
+
             child: Form(
               key: _formKey,
+
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+
                 children: [
 
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
 
-                  Text(
+                  const Text(
                     "Create Account ✨",
+
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -61,139 +104,359 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
                     ),
                   ),
 
-                  SizedBox(height: 40),
+                  const SizedBox(height: 30),
 
-                  // Name
+                  // ===================================================
+                  // ✅ PROFILE IMAGE SECTION
+                  // ===================================================
+
+                  Center(
+                    child: Column(
+                      children: [
+
+                        CircleAvatar(
+                          radius: 55,
+                          backgroundColor:
+                          Colors.grey.shade200,
+
+                          backgroundImage:
+                          selectedImage != null
+                              ? FileImage(selectedImage!)
+                              : null,
+
+                          child: selectedImage == null
+                              ? Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey,
+                          )
+                              : null,
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        ElevatedButton.icon(
+                          onPressed: pickImage,
+
+                          icon: const Icon(Icons.image),
+
+                          label: const Text(
+                            "Select Photo",
+                          ),
+
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                            const Color(0xFF034EA1),
+
+                            foregroundColor:
+                            Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 35),
+
+                  // ===================================================
+                  // NAME
+                  // ===================================================
+
                   TextFormField(
                     controller: nameController,
-                    decoration: inputDecoration("Full Name", Icons.person),
+
+                    decoration: inputDecoration(
+                      "Full Name",
+                      Icons.person,
+                    ),
+
                     validator: (v) =>
-                    v!.isEmpty ? "Enter name" : null,
+                    v!.isEmpty
+                        ? "Enter name"
+                        : null,
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                  // Email
+                  // ===================================================
+                  // EMAIL
+                  // ===================================================
+
                   TextFormField(
                     controller: emailController,
-                    decoration: inputDecoration("Email", Icons.email),
+
+                    decoration: inputDecoration(
+                      "Email",
+                      Icons.email,
+                    ),
+
                     validator: (v) =>
-                    v!.contains("@") ? null : "Invalid email",
+                    v!.contains("@")
+                        ? null
+                        : "Invalid email",
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                  // Password
+                  // ===================================================
+                  // PASSWORD
+                  // ===================================================
+
                   TextFormField(
                     controller: passwordController,
+
                     obscureText: isPasswordHidden,
+
                     decoration: inputDecoration(
                       "Password",
                       Icons.lock,
+
                       suffixIcon: IconButton(
-                        icon: Icon(isPasswordHidden
-                            ? Icons.visibility_off
-                            : Icons.visibility),
+                        icon: Icon(
+                          isPasswordHidden
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+
                         onPressed: () {
                           setState(() {
-                            isPasswordHidden = !isPasswordHidden;
+                            isPasswordHidden =
+                            !isPasswordHidden;
                           });
                         },
                       ),
                     ),
+
                     validator: (v) =>
-                    v!.length < 6 ? "Min 6 characters" : null,
+                    v!.length < 6
+                        ? "Min 6 characters"
+                        : null,
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                  // Roll No
+                  // ===================================================
+                  // ROLL NUMBER
+                  // ===================================================
+
                   TextFormField(
                     controller: rollController,
-                    decoration: inputDecoration("Roll Number", Icons.badge),
+
+                    decoration: inputDecoration(
+                      "Roll Number",
+                      Icons.badge,
+                    ),
+
                     validator: (v) =>
-                    v!.isEmpty ? "Enter roll number" : null,
+                    v!.isEmpty
+                        ? "Enter roll number"
+                        : null,
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                  // 🎯 Department Dropdown
+                  // ===================================================
+                  // DEPARTMENT DROPDOWN
+                  // ===================================================
+
                   DropdownButtonFormField<int>(
                     value: selectedDeptId,
-                    hint: Text("Select Department"),
+
+                    hint: const Text(
+                      "Select Department",
+                    ),
+
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.school),
+                      prefixIcon:
+                      const Icon(Icons.school),
+
                       filled: true,
                       fillColor: Colors.grey[100],
-                      contentPadding: EdgeInsets.symmetric(vertical: 18),
+
+                      contentPadding:
+                      const EdgeInsets.symmetric(
+                        vertical: 18,
+                      ),
+
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius:
+                        BorderRadius.circular(12),
+
                         borderSide: BorderSide.none,
                       ),
                     ),
+
                     items: departments.map((dept) {
+
                       return DropdownMenuItem<int>(
                         value: dept['dept_id'],
-                        child: Text(dept['dept_name']),
+
+                        child: Text(
+                          dept['dept_name'],
+                        ),
                       );
+
                     }).toList(),
+
                     onChanged: (value) {
                       setState(() {
                         selectedDeptId = value;
                       });
                     },
-                    validator: (value) =>
-                    value == null ? "Select department" : null,
-                  ),
-                  SizedBox(height: 30),
 
-                  // Register Button
+                    validator: (value) =>
+                    value == null
+                        ? "Select department"
+                        : null,
+                  ),
+
+                  const SizedBox(height: 35),
+
+                  // ===================================================
+                  // REGISTER BUTTON
+                  // ===================================================
+
                   SizedBox(
                     width: double.infinity,
                     height: 55,
+
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          try {
-                            await supabase.from('students').insert({
-                              'name': nameController.text.trim(),
-                              'email': emailController.text.trim(),
-                              'password': passwordController.text.trim(),
-                              'roll_no': rollController.text.trim(),
-                              'dept_id': selectedDeptId, // ✅ important
-                            });
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Registration Successful")),
+                        if (_formKey.currentState!
+                            .validate()) {
+
+                          try {
+
+                            // ==========================================
+                            // ✅ INSERT STUDENT IN SQL
+                            // ==========================================
+
+                            final insertedStudent =
+                            await supabase
+                                .from('students')
+                                .insert({
+
+                              'name':
+                              nameController.text.trim(),
+
+                              'email':
+                              emailController.text.trim(),
+
+                              'password':
+                              passwordController.text.trim(),
+
+                              'roll_no':
+                              rollController.text.trim(),
+
+                              'dept_id':
+                              selectedDeptId,
+
+                            })
+                                .select()
+                                .single();
+
+                            // ==========================================
+                            // ✅ GET GENERATED STUDENT ID
+                            // ==========================================
+
+                            String studentId =
+                            insertedStudent['student_id']
+                                .toString();
+
+                            // ==========================================
+                            // ✅ CREATE MONGODB PROFILE
+                            // ==========================================
+
+                            await MongoService
+                                .insertStudentProfile(
+                              studentId: studentId,
+                            );
+
+                            // ==========================================
+                            // ✅ UPLOAD PHOTO TO GRIDFS
+                            // ==========================================
+
+                            if (selectedImage != null) {
+
+                              final photoFileId =
+                              await MongoService
+                                  .uploadPhotoToGridFS(
+                                selectedImage!.path,
+                              );
+
+                              // ======================================
+                              // ✅ UPDATE PHOTO FILE ID
+                              // ======================================
+
+                              await MongoService
+                                  .updateStudentPhoto(
+                                studentId: studentId,
+                                photoFileId:
+                                photoFileId.toString(),
+                              );
+                            }
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(
+
+                              const SnackBar(
+                                content: Text(
+                                  "Registration Successful",
+                                ),
+                              ),
                             );
 
                             Navigator.pop(context);
 
                           } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString())),
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(
+
+                              SnackBar(
+                                content: Text(
+                                  e.toString(),
+                                ),
+                              ),
                             );
                           }
                         }
                       },
+
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF034EA1),
+                        backgroundColor:
+                        const Color(0xFF034EA1),
                       ),
-                      child: Text("Register", style: TextStyle(color: Colors.white),),
+
+                      child: const Text(
+                        "Register",
+
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   Center(
                     child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Text(
+                      onTap: () =>
+                          Navigator.pop(context),
+
+                      child: const Text(
                         "Already have an account? Login",
-                        style: TextStyle(color: Color(0xFF034EA1)),
+
+                        style: TextStyle(
+                          color: Color(0xFF034EA1),
+                        ),
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -203,16 +466,30 @@ class _StudentRegisterScreenState extends State<StudentRegisterScreen> {
     );
   }
 
-  InputDecoration inputDecoration(String hint, IconData icon,
-      {Widget? suffixIcon}) {
+  // =========================================================
+  // INPUT DECORATION
+  // =========================================================
+
+  InputDecoration inputDecoration(
+      String hint,
+      IconData icon, {
+        Widget? suffixIcon,
+      }) {
+
     return InputDecoration(
       hintText: hint,
+
       prefixIcon: Icon(icon),
+
       suffixIcon: suffixIcon,
+
       filled: true,
       fillColor: Colors.grey[100],
+
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius:
+        BorderRadius.circular(12),
+
         borderSide: BorderSide.none,
       ),
     );

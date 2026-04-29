@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/SplashScreen.dart';
-
+import 'services/mongo_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -12,6 +12,8 @@ void main() async {
 
   // ✅ PRINT SUCCESS MESSAGE
   debugPrint("✅ Supabase is connected successfully!");
+
+  await MongoService.connect();
 
   runApp(const MyApp());
 }
