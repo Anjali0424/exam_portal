@@ -2,17 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/SplashScreen.dart';
 import 'services/mongo_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // LOAD ENV
+  await dotenv.load(fileName: ".env");
+
+  // SUPABASE INIT
   await Supabase.initialize(
-    url: 'https://kijhyvbsqahycpuxyvbw.supabase.co',
-    anonKey: 'sb_publishable_12V-1X3l7IQOdsXyfMbmzw_-TGmSSxj',
+
+    url: dotenv.env['SUPABASE_URL']!,
+
+    anonKey:
+    dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  // ✅ PRINT SUCCESS MESSAGE
-  debugPrint("✅ Supabase is connected successfully!");
+  // SUCCESS MESSAGE
+  debugPrint(
+    "✅ Supabase connected successfully!",
+  );
 
+  // MONGODB CONNECT
   await MongoService.connect();
 
   runApp(const MyApp());

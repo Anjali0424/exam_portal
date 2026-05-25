@@ -124,6 +124,9 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                               .eq('password', passwordController.text.trim())
                               .single();
 
+                          debugPrint("LOGIN RESPONSE => $response");
+
+
                           // ✅ USE response HERE ONLY
                           String userName = response['name'];
                           int deptId = response['dept_id'];

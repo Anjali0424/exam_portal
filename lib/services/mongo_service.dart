@@ -1,13 +1,14 @@
 import 'package:mongo_dart/mongo_dart.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MongoService {
   static late Db db;
 
   static Future<void> connect() async {
     db = await Db.create(
-      "mongodb+srv://madhu:Madhusudan@cluster0.c6mvqdo.mongodb.net/vit_marksheet?retryWrites=true&w=majority&appName=Cluster0",
+      dotenv.env['MONGO_URI']!,
     );
 
     await db.open();

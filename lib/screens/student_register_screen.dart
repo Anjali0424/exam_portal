@@ -357,7 +357,7 @@ class _StudentRegisterScreenState
                                 .single();
 
                             // ==========================================
-                            // ✅ GET GENERATED STUDENT ID
+                            //  GET GENERATED STUDENT ID
                             // ==========================================
 
                             String studentId =
@@ -365,7 +365,7 @@ class _StudentRegisterScreenState
                                 .toString();
 
                             // ==========================================
-                            // ✅ CREATE MONGODB PROFILE
+                            //  CREATE MONGODB PROFILE
                             // ==========================================
 
                             await MongoService
@@ -374,7 +374,7 @@ class _StudentRegisterScreenState
                             );
 
                             // ==========================================
-                            // ✅ UPLOAD PHOTO TO GRIDFS
+                            //  UPLOAD PHOTO TO GRIDFS
                             // ==========================================
 
                             if (selectedImage != null) {
@@ -386,7 +386,7 @@ class _StudentRegisterScreenState
                               );
 
                               // ======================================
-                              // ✅ UPDATE PHOTO FILE ID
+                              //  UPDATE PHOTO FILE ID
                               // ======================================
 
                               await MongoService
