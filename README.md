@@ -110,8 +110,8 @@ Real-time malpractice detection
 
 
 *Developed By*
-Madhusudan Kailash Madankar
-Flutter & DBMS Project Developer
+Madhusudan Kailash Madankar and Anjali Durgam 
+Flutter & DBMS Project Developer 
 
 
 *Industry Collaboration*
